@@ -1,0 +1,55 @@
+package com.gsww.jup.util;
+
+import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.gsww.jup.entity.JupScore;
+import com.sdicons.json.mapper.JSONMapper;
+import com.sdicons.json.model.JSONArray;
+import com.sdicons.json.model.JSONValue;
+import com.sdicons.json.parser.JSONParser;
+
+public class JsonUtil {
+
+	public static String getJson(Object obj) throws Exception {
+		// JAVA对象转换成JSON值
+		JSONValue jsonValue = JSONMapper.toJSON(obj);
+		return jsonValue.render(false); // 是否格式化
+	}
+
+	public static String listGetJson(List<Object> list) throws Exception {
+		StringBuffer buf = new StringBuffer();
+		buf.append("[");
+		for (Object obj : list) {
+			buf.append(getJson(obj) + ",");
+		}
+		return buf.substring(0, buf.length() - 1) + "]";
+	}
+
+	public static List<?> getObject(String jsonStr, String className) throws Exception {
+		Object obj = null; 
+		Class cla = Class.forName(className);
+        try {  
+            JSONParser parser = new JSONParser(new StringReader(jsonStr));  
+            JSONValue jsonValue = parser.nextValue();  
+            if (jsonValue instanceof com.sdicons.json.model.JSONArray) {  
+                List<Object> list = new ArrayList<Object>();  
+                JSONArray jsonArray = (JSONArray) jsonValue;  
+                for (int i = 0; i < jsonArray.size(); i++) {  
+                    JSONValue jsonObj = jsonArray.get(i);  
+                    Object javaObj = JSONMapper.toJava(jsonObj, cla);  
+                    list.add(javaObj);  
+                }  
+                obj = list;  
+            } else if (jsonValue instanceof com.sdicons.json.model.JSONObject) {  
+                obj = JSONMapper.toJava(jsonValue, cla);  
+            } else {  
+                obj = jsonValue;  
+            }  
+        } catch (Exception e) {  
+            e.printStackTrace();  
+        }  
+        return (List<?>) obj;  
+	}
+}
