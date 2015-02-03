@@ -1,0 +1,2 @@
+# springMVC
+这是一个springMVC的项目，前台使用bootstarp框架，持久层使用hibernate的JPA实现
